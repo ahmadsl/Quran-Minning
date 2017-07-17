@@ -1,0 +1,200 @@
+swagger: '2.0'
+info:
+  description: Adds some extra RESTful services to OpenAM using SDK
+  version: 1.0.0
+  title: OpenAM Complementary API
+  # put the contact info for your development or API team
+  contact:
+    email: kamyar1979@gmail.com
+
+  license:
+    name: Copyright Shiveh Company
+    url: http://www.shiveh.com
+
+# tags are used for organizing operations
+tags:
+- name: admins
+  description: Secured Admin-only calls
+- name: developers
+  description: Operations available to regular developers
+
+paths:
+  /realms/{realm_name}/datastores/{datastore_name}/attributes:
+    get:
+      summary: Get realm datastore attributes
+      operationId: getRealmDatastoreAttributeDictionary
+      description: Gets all datastore attributes corresponding to a specific realm.
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: realm_name
+        description: Name of the Realm to get the related organization info
+        required: true
+        type: string
+      - in: path
+        name: datastore_name
+        description: Name of the Datastore (Directory Service) to get the related organization info
+        required: true
+        type: string
+      responses:
+        200:
+          description: Attribute and their values as a map (dictionary)
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/AttributeInfo'
+        400:
+          description: Bad input parameter
+        404:
+          description: No such realm found or no datastore
+    post:
+      summary: Adds/modified some attribute values
+      operationId: setRealmDatastoreAttributeDictionary
+      description: Adds some more datastore attributes or changes current datastore attribute values of a realm
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: realm_name
+        description: name of the Realm to get the related organization info
+        required: true
+        type: string
+      - in: path
+        name: datastore_name
+        description: name of the Datastore (Directory Service) to get the related organization info
+        required: true
+        type: string
+      responses:
+        204:
+          description: Attributes modified/added
+        400:
+          description: Invalid input paramters
+        404:
+          description: No such realm found or no datastore
+
+  /realms/{realm_name}/datastores/{datastore_name}/attributes/{attribute_name}:
+    get:
+      summary: Get realm datastore attribute
+      operationId: getRealmDatastoreAttribute
+      description: Gets a single datastore attribute by its name corresponding to a specific realm.
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: realm_name
+        description: Name of the Realm to get the related organization info
+        required: true
+        type: string
+      - in: path
+        name: datastore_name
+        description: Name of the Datastore (Directory Service) to get the related organization info
+        required: true
+        type: string
+      - in: path
+        name: attribute_name
+        description: Name of the attribute to be read
+        required: true
+        type: string
+      responses:
+        200:
+          description: Attribute and their values as a map (dictionary)
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/AttributeInfo'
+        400:
+          description: Bad input parameter
+        404:
+          description: No such realm found or no datastore or no attribute with the name
+  /realms/{realm_name}/subjects:
+    get:
+      summary: Get subjects of a specified realm
+      operationId: getRealmSubjects
+      description: Gets list of group subjects related to a sepcific realm
+      produces:
+        - application/json
+      parameters:
+        name: realm_name
+        description: Name of the Realm to get the related organization info
+        required: true
+        type: string
+      responses:
+        200:
+          description: List of subjects ready
+          schema:
+            type: array
+            items:
+              type: string
+        400:
+          description: Bad input parameter
+        404:
+          description: No such realm found
+  /realms/{realm_name}/subjects/{uid}/privileges:
+    get:
+      summary: Get privileges of a specified subject within given realm
+      operationId: getRealmSubjectPrivileges
+      description: Gets privileges of the specified subject within the given realm (organization)
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: realm_name
+          description: Name of the Realm to get the related organization info
+          required: true
+          type: string
+        - in: path
+          name: uid
+          description: The full qualified path of the UID of the group
+          required: true
+          type: string
+      responses:
+        200:
+          description: List of privilege objects ready
+          schema:
+            type: array
+            items:
+              type: string
+        400:
+          description: Bad input parameter
+        404:
+          description: No such realm found
+    post:
+      summary: Set privilege for specified subject within given realm
+      operationId: getRealmSubjectPrivileges
+      description: Gets privileges of the specified subject within the given realm (organization)
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: realm_name
+          description: Name of the Realm to get the related organization info
+          required: true
+          type: string
+        - in: path
+          name: uid
+          description: The full qualified path of the UID of the group
+          required: true
+          type: string
+        - in: body
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        204:
+          description: Privileges applied successfully
+        400:
+          description: Bad input parameter
+        404:
+          description: No such realm found
+
+
+definitions:
+  AttributeInfo:
+    type: array
+    items:
+      type: object
+
